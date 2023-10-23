@@ -29,6 +29,18 @@ app.get('/api/persons', (request, response) => {
     response.json(persons)
 })
 
+app.get('/api/persons/:id', (request, response) => {
+    const idnumber = Number(request.params.id)
+    const person = persons.find(person=> person.id === idnumber)
+    if (person)
+    {
+        response.json(person)
+    }
+    else{
+        response.status(404).end()
+    }
+})
+
 app.get('/info', (request, response) => {
     let timenow = new Date()
     let info = `
