@@ -4,6 +4,7 @@ morgan.token('body', function (req, res) { return JSON.stringify(req.body) })
 const cors = require('cors')
 const app = express()
 app
+.use(express.static('dist'))
 .use(cors())
 .use(express.json())
 .use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
