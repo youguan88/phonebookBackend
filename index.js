@@ -65,9 +65,24 @@ app.get('/info', (request, response) => {
 
 app.post('/api/persons', (request, response) => {
     const person = request.body
-    person.id = Math.floor(Math.random()*10000)
-    persons = persons.concat(person)
-    response.json(person)
+    console.log(person)
+    console.log(person.name)
+    if (!person.name || !person.number)
+    {
+        const message = {"error":'The name or number is missing'}
+        response.status(400).json(message)
+    }
+    else if (persons.map(x=>x.name).includes(person.name))
+    {
+        const message = {"error":'The name already exists in the phonebook'}
+        response.status(400).json(message)
+    }
+    else{
+        person.id = Math.floor(Math.random()*10000)
+        persons = persons.concat(person)
+        response.json(person)
+    }
+
 })
 
 const PORT = 3001
