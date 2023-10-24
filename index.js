@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express()
+app.use(express.json())
 
 let persons = [
     { 
@@ -60,6 +61,13 @@ app.get('/info', (request, response) => {
     <p>${timenow}</p>
     `
     response.send(info)
+})
+
+app.post('/api/persons', (request, response) => {
+    const person = request.body
+    person.id = Math.floor(Math.random()*10000)
+    persons = persons.concat(person)
+    response.json(person)
 })
 
 const PORT = 3001
