@@ -5,6 +5,7 @@ const cors = require('cors')
 const app = express()
 require('dotenv').config()
 const Person = require('./models/person')
+const person = require('./models/person')
 
 app
 .use(express.static('dist'))
@@ -78,14 +79,21 @@ app.post('/api/persons', (request, response) => {
         const message = { "error": 'The name or number is missing' }
         response.status(400).json(message)
     }
-    else if (persons.map(x => x.name).includes(person.name)) {
+/*     else if (persons.map(x => x.name).includes(person.name)) {
         const message = { "error": 'The name already exists in the phonebook' }
         response.status(400).json(message)
-    }
+    } */
     else {
-        person.id = Math.floor(Math.random() * 10000)
-        persons = persons.concat(person)
-        response.json(person)
+        const newPerson = new Person({
+            name : person.name,
+            number: person.number
+        })
+        newPerson.save().then(savedPerson => { 
+            response.json(savedPerson)
+        })
+        //person.id = Math.floor(Math.random() * 10000)
+        //persons = persons.concat(person)
+        //response.json(person)
     }
 
 })
