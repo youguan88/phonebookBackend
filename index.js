@@ -3,6 +3,9 @@ const morgan = require('morgan')
 morgan.token('body', function (req, res) { return JSON.stringify(req.body) })
 const cors = require('cors')
 const app = express()
+require('dotenv').config()
+const Person = require('./models/person')
+
 app
 .use(express.static('dist'))
 .use(cors())
@@ -34,18 +37,16 @@ let persons = [
 ]
 
 app.get('/api/persons', (request, response) => {
-    response.json(persons)
+    Person.find({}).then(persons => {
+        response.json(persons)
+    })
 })
 
 app.get('/api/persons/:id', (request, response) => {
-    const idnumber = Number(request.params.id)
-    const person = persons.find(person => person.id === idnumber)
-    if (person) {
+    Person.findById(request.params.id)
+    .then(person => {
         response.json(person)
-    }
-    else {
-        response.status(404).end()
-    }
+    })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -61,12 +62,14 @@ app.delete('/api/persons/:id', (request, response) => {
 })
 
 app.get('/info', (request, response) => {
-    let timenow = new Date()
-    let info = `
-    <p>Phonebook has info for ${persons.length} people</p>
-    <p>${timenow}</p>
-    `
-    response.send(info)
+    Person.find({}).then (persons => {
+        let timenow = new Date()
+        let info = `
+        <p>Phonebook has info for ${persons.length} people</p>
+        <p>${timenow}</p>
+        `
+        response.send(info)
+    })
 })
 
 app.post('/api/persons', (request, response) => {
@@ -87,7 +90,7 @@ app.post('/api/persons', (request, response) => {
 
 })
 
-const PORT = process.env.port || 3001
+const PORT = process.env.port
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
