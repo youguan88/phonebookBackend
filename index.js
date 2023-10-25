@@ -5,13 +5,12 @@ const cors = require('cors')
 const app = express()
 require('dotenv').config()
 const Person = require('./models/person')
-const person = require('./models/person')
 
 app
-.use(express.static('dist'))
-.use(cors())
-.use(express.json())
-.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
+    .use(express.static('dist'))
+    .use(cors())
+    .use(express.json())
+    .use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 
 let persons = [
@@ -45,25 +44,20 @@ app.get('/api/persons', (request, response) => {
 
 app.get('/api/persons/:id', (request, response) => {
     Person.findById(request.params.id)
-    .then(person => {
-        response.json(person)
-    })
+        .then(person => {
+            response.json(person)
+        })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
-    const idnumber = Number(request.params.id)
-    const person = persons.find(person => person.id === idnumber)
-    if (person) {
-        persons = persons.filter(person => person.id !== idnumber)
+    Person.findByIdAndDelete(request.params.id)
+    .then(result => {
         response.status(204).end()
-    }
-    else {
-        response.status(404).end()
-    }
+    })
 })
 
 app.get('/info', (request, response) => {
-    Person.find({}).then (persons => {
+    Person.find({}).then(persons => {
         let timenow = new Date()
         let info = `
         <p>Phonebook has info for ${persons.length} people</p>
@@ -79,23 +73,15 @@ app.post('/api/persons', (request, response) => {
         const message = { "error": 'The name or number is missing' }
         response.status(400).json(message)
     }
-/*     else if (persons.map(x => x.name).includes(person.name)) {
-        const message = { "error": 'The name already exists in the phonebook' }
-        response.status(400).json(message)
-    } */
     else {
         const newPerson = new Person({
-            name : person.name,
+            name: person.name,
             number: person.number
         })
-        newPerson.save().then(savedPerson => { 
+        newPerson.save().then(savedPerson => {
             response.json(savedPerson)
         })
-        //person.id = Math.floor(Math.random() * 10000)
-        //persons = persons.concat(person)
-        //response.json(person)
     }
-
 })
 
 const PORT = process.env.port
